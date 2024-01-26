@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+:root{
+--main: #DCF2F1;
+--sec: #7FC7D9;
+--decor_main: #365486;
+--decor_dark: #34495a;
+--decor_sub: #0F1035;
+font-family: 'Roboto', sans-serif;
+background-color: var(--main);
+}
+
+input{
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border: none ;
+    border-radius: 5px;
+    box-shadow: -5px 5px 10px var(--decor_sub);
+}
+
+.submitBtn{
+    text-align: center;
+    padding: 7 10;
+    color: var(--decor_sub);
+    background-color: var(--main)
+}
+
+h1{
+    text-shadow: var(--decor_dark);
+}
