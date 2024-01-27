@@ -2,10 +2,11 @@
 <script src="https://kit.fontawesome.com/887e44e44e.js" crossorigin="anonymous"></script>
 
 <div class="wrapper">
-    <h1>Request a reset</h1>
-    <form action="main.php" method="post">
-        <input type="email" value=""></input></br>
+    <h1>Request Password</h1>
+    <form action="forgot2.php" method="post">
+        <input type="email" ></input></br>
         <input type="submit" value="Reset" class="submitBtn"></input>
+        <input type="submit" value="Request" class="submitBtn"></input>
     </form>
 
 </div>
@@ -26,6 +27,11 @@
 
 h1{
     text-shadow: var(--decor_dark) -3px 5px 5px;
+}
+
+.submitBtn{
+    margin-right: 5px;
+    color: darkblue
 }
 
 
