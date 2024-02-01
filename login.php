@@ -1,15 +1,15 @@
 <link rel="stylesheet" href="style.css">
 <script src="https://kit.fontawesome.com/887e44e44e.js" crossorigin="anonymous"></script>
 
-<div class="wrapper" action="main.php">
+<div class="wrapper" action="index.php">
     <div class="inner">
         <i class="fa-solid fa-person-digging fa-4x"></i>
         <h1>Keep digging</h1>
-        <form action="main.php">
+        <form action="login2.php" method="post">
             Username</br>
-            <input type="text"></input></br>
+            <input type="text" name="username"></input></br>
             Password</br>
-            <input type="text"></input></br>
+            <input type="password" name="password"></input></br>
             <input type="submit" value="Start" class="submitBtn"></input>
         </form>
         <div class="rel">
@@ -20,7 +20,7 @@
 </div>
 
 <style>
-    
+   
 .wrapper{
     display: flex;
     justify-content: center;    
