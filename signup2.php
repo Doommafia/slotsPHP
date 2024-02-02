@@ -11,7 +11,7 @@
         
         if ($stmt->execute()) {
             echo "Account created successfully!";
-            header( "refresh:1;url=index.php" );
+            header( "refresh:1;url=login.php" );
         } else {
             echo "Error: " . $stmt->error;
         }
