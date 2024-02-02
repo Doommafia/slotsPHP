@@ -3,15 +3,15 @@ Working on a slots site in PHP, so you can gamble without all the downsides
 
 # Logic
 
-5x4 array
-[][][][][]
-[][][][][]
-[][][][][]
-[][][][][]
+  5x4 array
+  [][][][][]
+  [][][][][]
+  [][][][][]
+  [][][][][]
 
 Rolling:
-    roll columns L->R
-    rand() 4 times, 1s/roll of
+  roll columns L->R
+  rand() 4 times, 1s/roll of
 
 Symbols:
 Scatter - 1/25 (need 3 for a scatter)
