@@ -4,7 +4,8 @@
 <div class="wrapper">
     <h1>Request Password</h1>
     <form action="forgot2.php" method="post">
-        <input type="email" ></input></br>
+        Your email<br />
+        <input type="email" ></input></br><br />
         <input type="submit" value="Reset" class="submitBtn"></input>
         <input type="submit" value="Request" class="submitBtn"></input>
     </form>
@@ -12,12 +13,13 @@
 </div>
 
 <style>
+
 .wrapper{
     padding-top:3%;
-    margin-top: 15%;
+    margin-top: 12%;
     margin-left: 40%;
     width: 25%;
-    height: 25%;
+    height: 35%;
     position:relative;
     background-color: var(--decor_main);
     border-radius: 5%;
