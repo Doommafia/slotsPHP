@@ -16,9 +16,6 @@
             echo "Error: " . $stmt->error;
         }
     }
-
-
-
 ?>
 
 

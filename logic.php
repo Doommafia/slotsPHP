@@ -10,31 +10,43 @@ $gainVal = 0;
 $bet = floatval(0.20);
 $gameArr = array_fill(0, 5, array_fill(0, 4, 0));
 
-    function spin(&$gamesArr) {
+    function spin(&$gameArr) {
         for ($i = 0; $i < 5; $i++) {
-          $gamesArr[$i] = [rand(0, 46), rand(0, 46), rand(0, 46), rand(0, 46), rand(0, 46)];
+          $gameArr[$i] = [rand(0, 46), rand(0, 46), rand(0, 46), rand(0, 46), rand(0, 46)];
         }
       }
 
-function cellOut($gameArr){
-    for ($i = 0; $i < 5; $i++) {
-        for ($j = 0; $j < 4; $j++) {
-            if ($gameArr[$i][$j] < 15){
-                echo '<i class="fa-solid fa-poo fa-4x"></i>';
-            } else if ($gameArr[$i][$j] < 26){
-                echo '<i class="fa-solid fa-hippo fa-4x"></i>';
-            } else if ($gameArr[$i][$j] < 36){
-                echo '<i class="fa-solid fa-ghost fa-4x"></i>';
-            } else if ($gameArr[$i][$j] < 42){
-                echo '<i class="fa-solid fa-umbrella fa-4x"></i>';
-            } else if ($gameArr[$i][$j] < 45){
-                echo '<i class="fa-solid fa-cloud fa-4x"></i>';
-            } else {
-                echo '<i class="fa-solid fa-bomb fa-4x"></i>';
-            }
+    function iconEcho($val){
+        if ($val < 15){
+            echo '<i class="fa-solid fa-poo fa-4x"style="color:#e17055"></i>';
+        } else if ($val < 26){
+            echo '<i class="fa-solid fa-hippo fa-4x"style="color:#a29bfe"></i>';
+        } else if ($val < 36){
+            echo '<i class="fa-solid fa-ghost fa-4x"style="color:#dfe6e9"></i>';
+        } else if ($val < 42){
+            echo '<i class="fa-solid fa-umbrella fa-4x"style="color:#fdcb6e"></i>';
+        } else if ($val < 45){
+            echo '<i class="fa-solid fa-cloud fa-4x"style="color:#636e72"></i>';
+        } else {
+            echo '<i class="fa-solid fa-bomb fa-4x" style="color:#ff7675"></i>';
         }
     }
-}
+
+      function cellOut($gameArr){
+        echo '<div class="gameGrid">';
+        for ($i = 0; $i < 5; $i++) {
+            echo '<div class="gameRow">';
+            for ($j = 0; $j < 4; $j++) {
+                echo '<div class="gameCell">';
+                    iconEcho($gameArr[$i][$j]);
+                echo '</div>'; 
+            }
+            echo '</div>';
+            echo ' ';
+        }
+        echo '</div>';
+    }
+    
 
 function cellPop(&$gameArr, $categoryToPop){
     // Pop the value
@@ -71,15 +83,27 @@ function cellPop(&$gameArr, $categoryToPop){
     }
     switch($categoryToPop){
         case 0:
+            $gainVal = 1/15;
+        case 1:
+            $gainVal = 1/12;
+        case 2:
+            $gainVal = 1/9;
+        case 3:
+            $gainVal = 1/6;
+        case 4:
             $gainVal = 1/3;
-
     }
+
+
+    global $bet;
+    global $userMoney;
+    global $conn;
+
     $gain = $bet * ((1/($gainVal))/2 );
-    // update money on database and session, to be userMoney = userMoney + $gain
     $userMoney = $userMoney + $gain;
-    $_SESSION['userMoney'] = $userMoney;
-    // does this change it in the database aswell?
-    $sql = "UPDATE users SET userMoney = '$userMoney' WHERE username = '$_SESSION[username]'";
+    $_SESSION['money'] = $userMoney;
+    
+    $sql = "UPDATE `users` SET money = '$userMoney' WHERE username = '$_SESSION[username]'";
     mysqli_query($conn, $sql);
 }
 
@@ -164,3 +188,27 @@ function scatter(&$gameArr, &$money, $spinValue){
         }
     }
 }
+?>
+
+<style>
+  .gameRow{
+    display: inline-block;
+    margin: 0 5;
+  }
+  .gameGrid{
+    display: block;
+    text-align: center;
+    margin-top: 15%;
+
+  }
+  .gameCell{
+    height: 75px;
+    width: 75px;
+    color: white;
+    text-shadow: -3px 5px black;
+   /* 3px 3px 0 #000,
+    -3px 3px 0 #000,
+    -3px -3px 0 #000,
+    3px -3px 0 #000;*/
+  }
+</style>
