@@ -1,22 +1,52 @@
 <link rel="stylesheet" href="style.css">
 <script src="https://kit.fontawesome.com/887e44e44e.js" crossorigin="anonymous"></script>
+
 <?php
 include_once 'dbConn.php';
 session_start();
 
+if (!isset($_SESSION['username'])) {
+    header('Location: login.php');
+}
+
+
 $userMoney = $_SESSION['money'];
 $gain = 0;
-$gainVal = 0;
+$gainVal = 1/3;
 $bet = floatval(0.20);
-$gameArr = array_fill(0, 5, array_fill(0, 4, 0));
+$gameArr = array_fill(0, 4, array_fill(0, 5, 0));
+$counts = array('poo' => 0, 'hippo' => 0, 'ghost' => 0, 'umbrella' => 0, 'cloud' => 0, 'bomb' => 0);
+
+
+function clearScreen(){
+    for ($i = 0; $i < 50; $i++) echo "\r\n";
+}
+    function dataOut(){
+        global $userMoney;
+        global $gain;
+        global $gainVal;
+        global $bet;
+
+        echo 'gain: '. $gain. '<br/>'
+        .'userMoney: '. $userMoney. '<br/>'
+        .'bet: '. $bet. '<br/>'
+        .'gainVal: '. $gainVal. '<br/>';
+    
+        echo '--------------------------------<br/>';
+        echo '$gain = '. $bet. '* ((1/'. $gainVal. ')/2 )'. '<br/>';
+        echo '$gain = '. $bet. '*'. ((1/$gainVal)/2 ). '<br/>';
+        echo '$gain = '. $gain;
+    }
 
     function spin(&$gameArr) {
-        for ($i = 0; $i < 5; $i++) {
-          $gameArr[$i] = [rand(0, 46), rand(0, 46), rand(0, 46), rand(0, 46), rand(0, 46)];
+        for ($i = 0; $i < 4; $i++) {
+            for ($j = 0; $j < 5; $j++) {
+                $gameArr[$i][$j] = rand(0,46);
+            }
         }
       }
 
-    function iconEcho($val){
+    function iconOut($val){
         if ($val < 15){
             echo '<i class="fa-solid fa-poo fa-4x"style="color:#e17055"></i>';
         } else if ($val < 26){
@@ -34,12 +64,12 @@ $gameArr = array_fill(0, 5, array_fill(0, 4, 0));
 
       function cellOut($gameArr){
         echo '<div class="gameGrid">';
-        for ($i = 0; $i < 5; $i++) {
-            echo '<div class="gameRow">';
-            for ($j = 0; $j < 4; $j++) {
+        for ($i = 0; $i < 4; $i++) {
+            echo '<div class="gameColumn">';
+            for ($j = 0; $j < 5; $j++) {
                 echo '<div class="gameCell">';
-                    iconEcho($gameArr[$i][$j]);
-                echo '</div>'; 
+                    iconOut($gameArr[$i][$j]);
+                echo '</div>';
             }
             echo '</div>';
             echo ' ';
@@ -48,22 +78,28 @@ $gameArr = array_fill(0, 5, array_fill(0, 4, 0));
     }
     
 
-function cellPop(&$gameArr, $categoryToPop){
+    function cellPop(&$gameArr, $categoryToPop){
+        clearScreen();
+        global $bet;
+        global $userMoney;
+        global $conn;
+        global $gainVal;
+
     // Pop the value
         for ($i = 0; $i < 5; $i++) {
             for ($j = 0; $j < 4; $j++) {
-                if (cellCategory($gameArr[$i][$j]) == $categoryToPop) {
+                if (isset($gameArr[$i][$j]) && cellCategory($gameArr[$i][$j]) == $categoryToPop) {
                     $gameArr[$i][$j] = 0;  // Set the value to 0
                 }
             }
         }
 
     // Drop the values
-    for ($i = 4; $i > 0; $i--) {  // Start from the bottom row
-        for ($j = 0; $j < 4; $j++) {
-            if ($gameArr[$i][$j] == 0) {  // If the current cell is 0
+    for ($i = 3; $i >= 0; $i--) {  // Start from the bottom row
+        for ($j = 0; $j < 5; $j++) {
+            if (is_array($gameArr[$i]) && isset($gameArr[$i][$j]) && $gameArr[$i][$j] == 0) {  // If the current cell is 0
                 for ($k = $i - 1; $k >= 0; $k--) {  // Look for a non-zero cell in the column above
-                    if ($gameArr[$k][$j] != 0) {
+                    if (is_array($gameArr[$k]) && isset($gameArr[$k][$j]) && $gameArr[$k][$j] != 0) {
                         $gameArr[$i][$j] = $gameArr[$k][$j];  // Swap the values
                         $gameArr[$k][$j] = 0;
                         break;
@@ -72,15 +108,36 @@ function cellPop(&$gameArr, $categoryToPop){
             }
         }
     }
-
+    
     // Gen new values
-    for ($i = 0; $i < 5; $i++) {
-        for ($j = 0; $j < 4; $j++) {
-            if ($gameArr[$i][$j] == 0) {
+    for ($i = 0; $i < 4; $i++) {
+        for ($j = 0; $j < 5; $j++) {
+            if (is_array($gameArr[$i]) && isset($gameArr[$i][$j]) && $gameArr[$i][$j] == 0) {
                 $gameArr[$i][$j] = rand(0, 46);  // Generate a new random value
             }
         }
     }
+
+    global $counts;
+    $counts = array_count_values(array_filter($gameArr, function($value) {
+        return is_string($value) || is_int($value);
+    }));
+    
+    $needFurtherRecursion = false;
+    foreach ($counts as $count) {
+        if ($count >= 8) {
+            $needFurtherRecursion = true;
+            break;
+        }
+    }
+
+    // Only call gameEval if further recursion is necessary
+    if ($needFurtherRecursion) {
+        gameEval($gameArr);
+    }
+
+
+    cellOut($gameArr);    
     switch($categoryToPop){
         case 0:
             $gainVal = 1/15;
@@ -94,15 +151,10 @@ function cellPop(&$gameArr, $categoryToPop){
             $gainVal = 1/3;
     }
 
-
-    global $bet;
-    global $userMoney;
-    global $conn;
-
     $gain = $bet * ((1/($gainVal))/2 );
-    $userMoney = $userMoney + $gain;
+    $userMoney += $gain;
     $_SESSION['money'] = $userMoney;
-    
+
     $sql = "UPDATE `users` SET money = '$userMoney' WHERE username = '$_SESSION[username]'";
     mysqli_query($conn, $sql);
 }
@@ -124,91 +176,74 @@ function cellCategory($value){
 }
 
 function gameEval(&$gameArr){
-    // Create an array to count the occurrences of each category
-    $counts = array('poo' => 0, 'hippo' => 0, 'ghost' => 0, 'umbrella' => 0, 'cloud' => 0, 'bomb' => 0);
+    global $counts;
 
     // Count the occurrences of each category in the game array
-    for ($i = 0; $i < 5; $i++) {
-        for ($j = 0; $j < 4; $j++) {
+    for ($i = 0; $i < 4; $i++) {
+        for ($j = 0; $j < 5; $j++) {
             $category = cellCategory($gameArr[$i][$j]);
             $counts[$category]++;
         }
     }
 
-    // Check if any category occurs 5 times -> pop
     foreach ($counts as $category => $count) {
-        if ($count == 5) {
-            // If a category occurs 5 times, pop and shift it
+        if ($count >= 8) {
             cellPop($gameArr, $category);
         }
     }
+
+    //if ($counts['bomb'] >= 3) {
+    //    scatter();
+    //}
 }
 
-function scatter(&$gameArr, &$money, $spinValue){
+function scatter(){
+    global $bet;
     // Count the occurrences of 'bomb'
-    $bombCount = 0;
-    for ($i = 0; $i < 5; $i++) {
-        for ($j = 0; $j < 4; $j++) {
-            if (cellCategory($gameArr[$i][$j]) == 'bomb') {
-                $bombCount++;
-            }
-        }
-    }
-
-    // Check if there are at least 3 'bombs'
-    if ($bombCount >= 3) {
-        // Perform the scatter operation...
-        echo "Scatter! You get 9 free spins!\n";
-        $freeSpins = 9;
-
+    echo "Scatter! You get 9 free spins!\n";
+    $freeSpins = 9;
+    $totalBet = 0;
         while ($freeSpins > 0) {
-            spin($gameArr);  // Spin the game array
-            cellOut($gameArr);  // Display the game array
-
-            // Add the spin value to the user's money
-            $money += $spinValue;
-
-            // Check for new 'bombs'
-            $newBombCount = 0;
-            for ($i = 0; $i < 5; $i++) {
-                for ($j = 0; $j < 4; $j++) {
-                    if (cellCategory($gameArr[$i][$j]) == 'bomb') {
-                        $newBombCount++;
-                    }
+            clearScreen();
+            spin($gameArr);
+            cellOut($gameArr); 
+            gameEval($gameArr); 
+            echo 'Total: '. $totalBet;
+            $totalBet += $bet;
+            for ($i = 0; $i < 4; $i++) {
+                for ($j = 0; $j < 5; $j++) {
+                    $category = cellCategory($gameArr[$i][$j]);
+                    $counts[$category]++;
                 }
             }
 
-            // If there are 3 new 'bombs', add 9 more free spins
-            if ($newBombCount >= 3) {
-                echo "You got 3 more bombs! You get 9 more free spins!\n";
-                $freeSpins += 9;
-            }
-
+            if ($counts['bomb'] != 0){$freeSpins+=$counts['bomb'];}
             $freeSpins--;
         }
     }
-}
+
 ?>
 
 <style>
-  .gameRow{
+    .gameColumn{
+    transition: margin-right 2s;
     display: inline-block;
     margin: 0 5;
-  }
-  .gameGrid{
+
+    }
+
+    .gameGrid{
+    transition: margin-right 2s;
     display: block;
     text-align: center;
-    margin-top: 15%;
-
-  }
-  .gameCell{
+    
+    }
+  
+    .gameCell{
     height: 75px;
     width: 75px;
     color: white;
     text-shadow: -3px 5px black;
-   /* 3px 3px 0 #000,
-    -3px 3px 0 #000,
-    -3px -3px 0 #000,
-    3px -3px 0 #000;*/
-  }
+    }
+
 </style>
