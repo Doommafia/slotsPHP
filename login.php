@@ -1,52 +1,42 @@
-<link rel="stylesheet" href="style.css">
-<script src="https://kit.fontawesome.com/887e44e44e.js" crossorigin="anonymous"></script>
+<?php
+    if(isset($_POST["password"]) && isset($_POST["username"])){
+        echo'<script>alert("You have successfully registered")</script>';
+        header('location:   index.php');        
+    }else{
+    echo
+        '<div class="wrapper">
+            <script src="https://kit.fontawesome.com/887e44e44e.js" crossorigin="anonymous"></script>
+            <form action="login.php" method="post">
+                Username</br>
+                <input type="text" name="username"></input></br>
+                Password</br>
+                <input type="password" name="password"></input></br>
+                <input type="submit" value="Start" class="submitBtn"></input>
+            </form>            
 
-<div class="wrapper" action="index.php">
-    <div class="inner">
-        <i class="fa-solid fa-person-digging fa-4x"></i>
-        <h1>Keep digging</h1>
-        <form action="login2.php" method="post">
-            Username</br>
-            <input type="text" name="username"></input></br>
-            Password</br>
-            <input type="password" name="password"></input></br>
-            <input type="submit" value="Start" class="submitBtn"></input>
-        </form>
-        <div class="rel">
             <a href="signup.php">Sign up</a></br>
             <a href="forgot.php">Forgot Password?</a>
-        </div>
-    </div>
-</div>
-
+        </div>';
+    }
+?>
 <style>
-   
-.wrapper{
-    display: flex;
-    justify-content: center;    
-    align-items: center;
-    margin-top: 7%;
-    margin-left: 40%;
-    width: 25%;
-    height: 70%;
-    position:relative;
-    background-color: var(--decor_main);
-    border-radius: 5%;
-}
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
-.inner{
+:root {
+    background: radial-gradient(circle, #0A0A33 36%, #000068 100%);
+}
+body {
+    font-family: Roboto, sans-serif;
     color: white;
-    text-align: center;
+    display: flexbox;
+    justify-content: center;
+    align-items: center;
 }
 
-.rel{
-    padding-top: 5px;
+.wrapper{
+    margin-top: 40dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
-
-a{
-    text-decoration: none;
-    color: var(--main)
-}
-
-
 </style>
